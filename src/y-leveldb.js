@@ -221,31 +221,35 @@ const clearUpdatesRange = async (db, docName, from, to) => clearRange(db, create
  *
  * @param {string} docName
  * @param {number} clock must be unique
- * @return {Array<string|number>}
+ * @return {string}
  */
-const createDocumentUpdateKey = (docName, clock) => ['v1', docName, 'update', clock]
+const createDocumentUpdateKey = (docName, clock) => `v1-${docName}-update-${clock}`
 
 /**
  * @param {string} docName
  * @param {string} metaKey
+ * @return {string}
  */
-const createDocumentMetaKey = (docName, metaKey) => ['v1', docName, 'meta', metaKey]
+const createDocumentMetaKey = (docName, metaKey) => `v1-${docName}-meta-${metaKey}`
 
 /**
  * @param {string} docName
+ * @return {string}
  */
-const createDocumentMetaEndKey = (docName) => ['v1', docName, 'metb'] // simple trick
+const createDocumentMetaEndKey = (docName) => `v1-${docName}-metb` // simple trick
 
 /**
  * We have a separate state vector key so we can iterate efficiently over all documents
  * @param {string} docName
+ * @return {string}
  */
-const createDocumentStateVectorKey = (docName) => ['v1_sv', docName]
+const createDocumentStateVectorKey = (docName) => `v1_sv-${docName}`
 
 /**
  * @param {string} docName
+ * @return {string}
  */
-const createDocumentFirstKey = (docName) => ['v1', docName]
+const createDocumentFirstKey = (docName) => `v1-${docName}`
 
 /**
  * We use this key as the upper limit of all keys that can be written.
@@ -253,8 +257,9 @@ const createDocumentFirstKey = (docName) => ['v1', docName]
  * so we need to make sure that this key has the biggest size!
  *
  * @param {string} docName
+ * @return {string}
  */
-const createDocumentLastKey = (docName) => ['v1', docName, 'zzzzzzz']
+const createDocumentLastKey = (docName) => `v1-${docName}-zzzzzzz`
 
 // const emptyStateVector = (() => Y.encodeStateVector(new Y.Doc()))()
 
