@@ -9,6 +9,11 @@ import defaultLevel from 'level'
 import { Buffer } from 'buffer'
 
 export const PREFERRED_TRIM_SIZE = 500
+// we'll use this as the maximum instead of maximum bit value
+// since we are using string keys that are sorted by ordinal value
+const MAX_CLOCK_STRING_VALUE = 9999999999
+
+const prepend = (num) => (`0000000000${num}`).slice(-10);
 
 const YEncodingString = 0
 const YEncodingUint32 = 1
@@ -157,7 +162,7 @@ export const getLevelBulkData = (db, opts) => promise.create((resolve, reject) =
  */
 export const getLevelUpdates = (db, docName, opts = { values: true, keys: false }) => getLevelBulkData(db, {
   gte: createDocumentUpdateKey(docName, 0),
-  lt: createDocumentUpdateKey(docName, binary.BITS32),
+  lt: createDocumentUpdateKey(docName, MAX_CLOCK_STRING_VALUE),
   ...opts
 })
 
@@ -185,7 +190,8 @@ export const getCurrentUpdateClock = (db, docName) => getLevelUpdates(db, docNam
   if (keys.length === 0) {
     return -1
   } else {
-    return keys[0][3]
+    const key = keys[0].toString().split("-");
+    return parseInt(key[3])
   }
 })
 
@@ -223,7 +229,7 @@ const clearUpdatesRange = async (db, docName, from, to) => clearRange(db, create
  * @param {number} clock must be unique
  * @return {string}
  */
-const createDocumentUpdateKey = (docName, clock) => `v1-${docName}-update-${clock}`
+const createDocumentUpdateKey = (docName, clock) => `v1-${docName}-update-${prepend(clock)}`
 
 /**
  * @param {string} docName
